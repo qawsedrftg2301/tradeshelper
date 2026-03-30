@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contractor Search</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+
+
+<button onclick="search()">Show All Tradespeople</button>
+
+<div id="results"></div>
+
+<script>
+// Check if user is logged in (simple check, can be improved)
+if (!localStorage.getItem('loggedIn')) {
+  window.location.href = '/auth.html';
+}
+
+async function search() {
+  const res = await fetch(`/api/contractors/search`);
+  const data = await res.json();
+  const list = document.getElementById("results");
+  list.innerHTML = "";
+  data.forEach(c => {
+    const box = document.createElement("div");
+    box.className = "contractor-box";
+    box.innerHTML = `
+      ${c.photo ? `<img src="${c.photo}" alt="Photo" style="max-width:100%;max-height:120px;border-radius:8px;display:block;margin-bottom:0.5em;">` : ''}
+      <strong>Name:</strong> ${c.name || ''}<br>
+      <strong>Company:</strong> ${c.company || ''}<br>
+      <strong>Trade:</strong> ${c.trade || ''}<br>
+      <strong>City:</strong> ${c.city || ''}<br>
+      <strong>Phone:</strong> ${c.phone || ''}<br>
+      <strong>Services:</strong> ${c.services || ''}<br>
+      <strong>Contacts:</strong> ${c.contacts || ''}
+    `;
+    list.appendChild(box);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradesHelper - Login / Signup</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+
+
+<div style="display: flex; justify-content: center; gap: 3em; width: 100%; max-width: 900px;">
+  <div style="background: rgba(255,255,255,0.85); border-radius: 12px; padding: 2em; min-width: 340px; box-shadow: 0 2px 8px rgba(99,102,241,0.08);">
+    <h2>Signup</h2>
+    <label>
+      <input type="radio" name="signup-type" id="signup-type-customer" value="customer" checked onchange="toggleSignupFields()"> Customer
+    </label>
+    <label>
+      <input type="radio" name="signup-type" id="signup-type-tradesperson" value="tradesperson" onchange="toggleSignupFields()"> Tradesperson
+    </label>
+    <div id="customer-fields">
+      <input id="signup-customer-name" placeholder="Name">
+      <input id="signup-customer-address" placeholder="Address">
+      <input id="signup-customer-phone" placeholder="Phone">
+    </div>
+    <div id="tradesperson-fields" style="display:none">
+      <input id="signup-tradesperson-name" placeholder="Name">
+      <input id="signup-tradesperson-company" placeholder="Company">
+      <input id="signup-tradesperson-trade" placeholder="Trade">
+      <input id="signup-tradesperson-city" placeholder="City">
+      <input id="signup-tradesperson-phone" placeholder="Phone">
+      <input id="signup-tradesperson-services" placeholder="Services">
+      <input id="signup-tradesperson-contacts" placeholder="Contacts">
+    </div>
+    <input id="signup-email" placeholder="Email" type="email">
+    <input id="signup-password" placeholder="Password" type="password">
+    <button onclick="signup()">Signup</button>
+    <div id="signup-message"></div>
+  </div>
+
+  <div style="background: rgba(255,255,255,0.85); border-radius: 12px; padding: 2em; min-width: 340px; box-shadow: 0 2px 8px rgba(99,102,241,0.08);">
+    <h2>Login</h2>
+    <input id="login-email" placeholder="Email" type="email">
+    <input id="login-password" placeholder="Password" type="password">
+    <button onclick="login()">Login</button>
+    <div id="login-message"></div>
+  </div>
+</div>
+
+<script>
+function toggleSignupFields() {
+  const isCustomer = document.getElementById('signup-type-customer').checked;
+  document.getElementById('customer-fields').style.display = isCustomer ? '' : 'none';
+  document.getElementById('tradesperson-fields').style.display = isCustomer ? 'none' : '';
+}
+
+async function signup() {
+  const type = document.getElementById('signup-type-customer').checked ? 'customer' : 'tradesperson';
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  let body = { type, email, password };
+  if (type === 'customer') {
+    body.name = document.getElementById('signup-customer-name').value;
+    body.address = document.getElementById('signup-customer-address').value;
+    body.phone = document.getElementById('signup-customer-phone').value;
+  } else {
+    body.name = document.getElementById('signup-tradesperson-name').value;
+    body.company = document.getElementById('signup-tradesperson-company').value;
+    body.trade = document.getElementById('signup-tradesperson-trade').value;
+    body.city = document.getElementById('signup-tradesperson-city').value;
+    body.phone = document.getElementById('signup-tradesperson-phone').value;
+    body.services = document.getElementById('signup-tradesperson-services').value;
+    body.contacts = document.getElementById('signup-tradesperson-contacts').value;
+  }
+  const res = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  document.getElementById('signup-message').innerText = data.message || data.error || '';
+}
+
+async function login() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  document.getElementById('login-message').innerText = data.message || data.error || '';
+  if (data.message === 'Login success') {
+    localStorage.setItem('loggedIn', '1');
+    window.location.href = '/search.html';
+  }
+}
+</script>
+
+</body>
+</html>
