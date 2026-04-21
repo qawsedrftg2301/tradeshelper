@@ -17,7 +17,6 @@
     "ejs": "^5.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "sqlite3": "^6.0.1",
     "lowdb": "^6.0.1"
   }
 }
