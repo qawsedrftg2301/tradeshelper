@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>TradesHelper</title></head>
+<body>
+<h1>Welcome to TradesHelper</h1>
+<% if (user) { %>
+  <p>Hello, <%= user.username %>! <a href="/logout">Logout</a></p>
+  <form action="/search" method="get">
+    <input type="text" name="q" placeholder="Search trades">
+    <button type="submit">Search</button>
+  </form>
+<% } else { %>
+  <a href="/signup">Sign Up</a> | <a href="/login">Login</a>
+<% } %>
+</body>
+</html>

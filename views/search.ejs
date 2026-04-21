@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Search Results</title></head>
+<body>
+<h1>Search Results</h1>
+<ul>
+<% trades.forEach(trade => { %>
+  <li><strong><%= trade.name %></strong> - <%= trade.category %>: <%= trade.description %></li>
+<% }) %>
+</ul>
+<a href="/">Home</a>
+</body>
+</html>
