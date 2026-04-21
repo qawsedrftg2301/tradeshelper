@@ -12,12 +12,18 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static("public"))
 
-mongoose.connect("mongodb://127.0.0.1:27017/tradeshelper")
+const mongoUrl = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/tradeshelper"
+mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 
 app.use("/api/auth", authRoutes)
 app.use("/api/contractors", contractorRoutes)
 app.use("/api/admin", adminRoutes)
 
-app.listen(3000, () => {
-  console.log("TradesHelper running on port 3000")
-})
+if (require.main === module) {
+  const port = process.env.PORT || 3000
+  app.listen(port, () => {
+    console.log(`TradesHelper running on port ${port}`)
+  })
+}
+
+module.exports = app
