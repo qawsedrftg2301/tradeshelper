@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug - TradesHelper</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .test-section { border: 1px solid #ccc; margin: 10px 0; padding: 15px; }
+    button { margin: 5px; padding: 8px 16px; }
+    .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-left: 4px solid #333; }
+    .success { border-left-color: green; }
+    .error { border-left-color: red; }
+  </style>
+</head>
+<body>
+  <h1>Debug TradesHelper API</h1>
+  
+  <div class="test-section">
+    <h3>1. Test Health Check</h3>
+    <button onclick="testHealth()">Test /api/health</button>
+    <div id="health-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>2. Test Auth Routes</h3>
+    <button onclick="testAuthTest()">Test /api/auth/test</button>
+    <div id="auth-test-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>3. Test Signup</h3>
+    <input id="signup-email" placeholder="test@example.com" value="test@example.com">
+    <input id="signup-password" placeholder="password" value="password123">
+    <input id="signup-name" placeholder="Test User" value="Test User">
+    <button onclick="testSignup()">Test Signup</button>
+    <div id="signup-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>4. Test Login</h3>
+    <input id="login-email" placeholder="test@example.com" value="test@example.com">
+    <input id="login-password" placeholder="password" value="password123">
+    <button onclick="testLogin()">Test Login</button>
+    <div id="login-result" class="result"></div>
+  </div>
+
+  <script>
+    function displayResult(elementId, data, isError = false) {
+      const element = document.getElementById(elementId);
+      element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      element.className = isError ? 'result error' : 'result success';
+    }
+
+    async function testHealth() {
+      try {
+        const response = await fetch('/api/health');
+        const data = await response.json();
+        displayResult('health-result', { status: response.status, data });
+      } catch (error) {
+        displayResult('health-result', { error: error.message }, true);
+      }
+    }
+
+    async function testAuthTest() {
+      try {
+        const response = await fetch('/api/auth/test');
+        const data = await response.json();
+        displayResult('auth-test-result', { status: response.status, data });
+      } catch (error) {
+        displayResult('auth-test-result', { error: error.message }, true);
+      }
+    }
+
+    async function testSignup() {
+      try {
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const name = document.getElementById('signup-name').value;
+        
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            password,
+            name,
+            type: 'customer'
+          })
+        });
+        const data = await response.json();
+        displayResult('signup-result', { status: response.status, data }, response.status >= 400);
+      } catch (error) {
+        displayResult('signup-result', { error: error.message }, true);
+      }
+    }
+
+    async function testLogin() {
+      try {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        displayResult('login-result', { status: response.status, data }, response.status >= 400);
+      } catch (error) {
+        displayResult('login-result', { error: error.message }, true);
+      }
+    }
+  </script>
+</body>
+</html>
