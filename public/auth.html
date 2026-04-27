@@ -59,42 +59,68 @@ async function signup() {
   const type = document.getElementById('signup-type-customer').checked ? 'customer' : 'tradesperson';
   const email = document.getElementById('signup-email').value;
   const password = document.getElementById('signup-password').value;
-  let body = { type, email, password };
+  
+  const formData = new FormData();
+  formData.append('type', type);
+  formData.append('email', email);
+  formData.append('password', password);
+  
   if (type === 'customer') {
-    body.name = document.getElementById('signup-customer-name').value;
-    body.address = document.getElementById('signup-customer-address').value;
-    body.phone = document.getElementById('signup-customer-phone').value;
+    formData.append('name', document.getElementById('signup-customer-name').value);
+    formData.append('address', document.getElementById('signup-customer-address').value);
+    formData.append('phone', document.getElementById('signup-customer-phone').value);
   } else {
-    body.name = document.getElementById('signup-tradesperson-name').value;
-    body.company = document.getElementById('signup-tradesperson-company').value;
-    body.trade = document.getElementById('signup-tradesperson-trade').value;
-    body.city = document.getElementById('signup-tradesperson-city').value;
-    body.phone = document.getElementById('signup-tradesperson-phone').value;
-    body.services = document.getElementById('signup-tradesperson-services').value;
-    body.contacts = document.getElementById('signup-tradesperson-contacts').value;
+    formData.append('name', document.getElementById('signup-tradesperson-name').value);
+    formData.append('company', document.getElementById('signup-tradesperson-company').value);
+    formData.append('trade', document.getElementById('signup-tradesperson-trade').value);
+    formData.append('city', document.getElementById('signup-tradesperson-city').value);
+    formData.append('phone', document.getElementById('signup-tradesperson-phone').value);
+    formData.append('services', document.getElementById('signup-tradesperson-services').value);
+    formData.append('contacts', document.getElementById('signup-tradesperson-contacts').value);
   }
-  const res = await fetch('/api/auth/signup', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  document.getElementById('signup-message').innerText = data.message || data.error || '';
+  
+  try {
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    document.getElementById('signup-message').innerText = data.message || data.error || 'Unknown error';
+    if (data.message === 'User created') {
+      document.getElementById('signup-message').style.color = 'green';
+    } else {
+      document.getElementById('signup-message').style.color = 'red';
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    document.getElementById('signup-message').innerText = 'Network error';
+    document.getElementById('signup-message').style.color = 'red';
+  }
 }
 
 async function login() {
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  const data = await res.json();
-  document.getElementById('login-message').innerText = data.message || data.error || '';
-  if (data.message === 'Login success') {
-    localStorage.setItem('loggedIn', '1');
-    window.location.href = '/search.html';
+  
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    document.getElementById('login-message').innerText = data.message || data.error || 'Unknown error';
+    if (data.message === 'Login success') {
+      document.getElementById('login-message').style.color = 'green';
+      localStorage.setItem('loggedIn', '1');
+      window.location.href = '/search.html';
+    } else {
+      document.getElementById('login-message').style.color = 'red';
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    document.getElementById('login-message').innerText = 'Network error';
+    document.getElementById('login-message').style.color = 'red';
   }
 }
 </script>
